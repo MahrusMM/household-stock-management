@@ -1,0 +1,12 @@
+{% extends "stock/base.html" %}
+
+
+
+{% block content %}
+<h2>Reject Request</h2>
+<p>Are you sure you want to reject this request?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Reject</button>
+</form>
+{% endblock %}

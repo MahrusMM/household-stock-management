@@ -1,0 +1,93 @@
+{% extends "stock/base.html" %}
+{% block content %}
+
+<div class="container">
+    <h2>Welcome, {{ user.username }}!</h2>
+    <p>This is your dashboard. Manage stock, view requests, and more.</p>
+
+    <!-- 🔹 Parent Features -->
+    {% if user.is_parent %}
+        <h3>Manage Stock</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in stock_items %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.price }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3">No stock available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Pending Requests</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Requested By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                    <tr>
+                        <td>{{ request.item.name }}</td>
+                        <td>{{ request.user.username }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'approve_request' request.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Approve</button>
+                            </form>
+                            <form method="POST" action="{% url 'reject_request' request.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3">No pending requests.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Budget</h3>
+        <p>Remaining Budget: ${{ budget.remaining }} / ${{ budget.limit }}</p>
+
+    <!-- 🔹 Child Features -->
+    {% elif user.is_child %}
+        <h3>Request Stock</h3>
+        <form method="POST" action="{% url 'request_stock' %}">
+            {% csrf_token %}
+            <select name="item_id" class="form-select">
+                {% for item in stock_items %}
+                    <option value="{{ item.id }}">{{ item.name }} ({{ item.quantity }} available)</option>
+                {% endfor %}
+            </select>
+            <input type="number" name="quantity" class="form-control mt-2" placeholder="Quantity" required>
+            <button type="submit" class="btn btn-primary mt-2">Request</button>
+        </form>
+
+        <h3>My Requests</h3>
+        <ul class="list-group">
+            {% for request in user_requests %}
+                <li class="list-group-item">
+                    {{ request.item.name }} - {{ request.quantity }} ({{ request.status }})
+                </li>
+            {% empty %}
+                <li class="list-group-item">No requests made yet.</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
+{% endblock %}

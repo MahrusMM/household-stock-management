@@ -1,0 +1,15 @@
+{% extends "stock/base.html" %}
+
+
+
+{% block content %}
+<h2>Request Stock</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="item">Item:</label>
+    <input type="text" name="item" required>
+    <label for="quantity">Quantity:</label>
+    <input type="number" name="quantity" required>
+    <button type="submit">Request</button>
+</form>
+{% endblock %}

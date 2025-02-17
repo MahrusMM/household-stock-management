@@ -1,0 +1,26 @@
+{% extends "stock/base.html" %}
+{% block content %}
+    <h2>Pending Requests</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Requested By</th>
+                <th>Quantity</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+                <tr>
+                    <td>{{ request.item.name }}</td>
+                    <td>{{ request.user.username }}</td>
+                    <td>{{ request.quantity }}</td>
+                    <td>{{ request.status }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No requests found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
